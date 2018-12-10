@@ -19,7 +19,8 @@ console.log("Connection is open...");
 // db.dropCollection('activities');
 db.dropCollection('dates');
 db.dropCollection('organizers');
-db.dropCollection('locations');
+db.dropCollection('districts');
+
 //People Schema
 // var UserSchema = mongoose.Schema({
 //   userId: { type: Number, required: true, unique: true },
@@ -37,8 +38,8 @@ db.dropCollection('locations');
 var ActivitySchema = mongoose.Schema({
   name: { type: String, required: true},
   date: { type: [], required: true},
-  location: { type: mongoose.Schema.Types.ObjectId, ref: 'Location', required: true},
-  //district: { type: mongoose.Schema.Types.ObjectId, ref: 'District', lowercase: true},
+  dist: { type: mongoose.Schema.Types.ObjectId, ref: 'Location', required: true},
+  loc: {type: String, required:true},
   organizer: {type: mongoose.Schema.Types.ObjectId, ref: 'Organizer', required: true},
   //contact: { type: mongoose.Schema.Types.ObjectId, ref: 'Contact'}
   });
@@ -51,12 +52,12 @@ var DateSchema = mongoose.Schema({
   });
 var Date = mongoose.model('Date', DateSchema);
 
-var LocSchema = mongoose.Schema({
-  name: {type: String, required: true, unique: true},
-  dist: {type: String, required: true},
+var DistSchema = mongoose.Schema({
+  dist: {type: String, required: true,unique:true},
+  loc: {type: [], required: true},
   activities: { type: [{type: mongoose.Schema.Types.ObjectId, ref: 'Activity'}]}
   });
-var Location = mongoose.model('Location', LocSchema);
+var District = mongoose.model('District', DistSchema);
 
 var OrgSchema = mongoose.Schema({
   name: {type: String, required: true, unique: true},
@@ -65,126 +66,111 @@ var OrgSchema = mongoose.Schema({
   });
 var Organizer = mongoose.model('Organizer', OrgSchema);
 
-request({
-  url: 'http://fundraising.one.gov.hk/fundraise_query/webservice/psi/json',
-  json: true
-}, function (error, response, body) {
+function preData(){
+  request({
+    url: 'http://fundraising.one.gov.hk/fundraise_query/webservice/psi/json',
+    json: true
+  }, function (error, response, body) {
 
-  if (!error && response.statusCode === 200) {
+    act = body.activities;
 
-      var act = body.activities;
+    var allOrg={};
+    var allDate=[];
+    var allDist={};
 
-      var allOrg={};
-      var allDate=[];
-      var allLoc={};
+    act.forEach(function(each){
+      let schedule= each.schedule;
+      let locName= each.locationNameEnglish; let distName= each.districtNameEnglish;
+      let contact= each.enquiryContact;      let orgName= each.organisationNameEnglish;
 
-      Promise.all(
-        function(){
-          act.forEach(function(each){
-            let schedule= each.schedule;
-            let locName= each.locationNameEnglish; let distName= each.districtNameEnglish;
-            let contact= each.enquiryContact;      let orgName= each.organisationNameEnglish;
+      // get all unique Org Name
+      if (Object.keys(allOrg).includes(orgName)==false){
+        allOrg[orgName]=contact;
+      };
 
-            // get all unique Org Name
-            if (Object.keys(allOrg).includes(orgName)==false){
-              allOrg[orgName]=contact;
-            };
+      if (Object.keys(allDist).includes(distName)==false){
+        allDist[distName]=[locName];
+      }else{
+        allDist[distName].push(locName);
+      }
 
-            //get all unique Date
-            if (Object.keys(allLoc).includes(locName)==false){
-              allLoc[locName]=distName;
-            };
-
-            schedule.forEach(function(s){
-              var dateFrom = s.dateFrom;
-              if(allDate.includes(dateFrom)==false){
-                allDate.push(dateFrom);
-              };
-            });
-            allDate=allDate.sort();
-          });
-
-          return [allOrg, allLoc, allDate];
-
-        }).then(function (resultArray) {
-
-          var allOrg= resultArray[0]
-          var allLoc= resultArray[1]
-          var allDate= resultArray[2]
-
-          for (org in allOrg){
-
-            var newOrg= new Organizer({
-              name: org,
-              contact: allOrg[org]
-            });
-            newOrg.save();
-
-          };
-
-          for (loc in allLoc){
-
-            var newLoc= new Location({
-              name: loc,
-              dist: allLoc[loc]
-            });
-            newLoc.save();
-
-          };
-
-          allDate.forEach(function(date){
-
-            var newDate= new Date({
-              date: date
-            });
-            newDate.save();
-          });
-
-      }).then(function(resultOfFunction3){
-
-        act.forEach(function(each){
-
-          let actName= each.activityNameEnglish;
-          let schedule= each.schedule;
-          let locName= each.locationNameEnglish;
-          let orgName= each.organisationNameEnglish;
-
-          Organizer.findOne({name: orgName},function(err,o){
-            if (err) {console.log('O find' + err);}
-            console.log(orgName + o.name + o._id);
-            Location.findOne({name: locName}, function(err,l){
-              if (err) {console.log('L find' + err);}
-
-              var a = new Activity({
-                name: actName,
-                date: schedule,
-                location: l._id,
-                organizer: o._id
-              });
-              a.save(function(err){
-                if(err){console.log('A save ' + err);};
-                Organizer.update({name: orgName}, {$set: {activities: o.push(a._id)}},function(err){ console.log ('O update ' + err)});
-                Location.update({name: locName}, {$set: {activities: l.push(a._id)}},function(err){ console.log(' L update ' + err)});
-                schedule.forEach(function(s){
-
-                  var dateFrom = s.dateFrom;
-                  Date.find({date:dateFrom}, function(err, d){
-                    if(err){ console.log('d find ' + err);};
-                    Date.update({date: dateFrom}, {$set: {activities: d.push(a._id)}},function(err){ console.log('Date Update ' + err);});
-                  });
-
-                });
-              });
-            });
-          });
-        });
-
-      }).catch(function(err) {
-        console.error(err.stack || err);
+      schedule.forEach(function(s){
+        var dateFrom = s.dateFrom;
+        if(allDate.includes(dateFrom)==false){
+          allDate.push(dateFrom);
+        };
       });
 
-      //save activities
+      allDate=allDate.sort();
+    });
 
+    for (org in allOrg){
+      var newOrg= new Organizer({
+        name: org,
+        contact: allOrg[org]
+      });
+      newOrg.save();
     };
-  }
-);
+
+    for (dist in allDist){
+      var newDist= new District({
+        dist: dist,
+        loc: allDist[dist]
+      });
+      newDist.save();
+    };
+
+    allDate.forEach(function(date){
+
+      var newDate= new Date({
+        date: date
+      });
+      newDate.save();
+    });
+    console.log('done');
+    return act;
+  })
+}
+
+function saveAct(act){
+    console.log('whyyyyyy');
+    act.forEach(function(each){
+    console.log('whyyyyyy');
+    let actName= each.activityNameEnglish;
+    let schedule= each.schedule;
+    let locName= each.locationNameEnglish;
+    let distName= each.districtNameEnglish;
+    let orgName= each.organisationNameEnglish;
+
+    Organizer.findOne({name: orgName},function(err,o){
+      if (err) {console.log('O find' + err);}
+      console.log(orgName + o.name + o._id);
+      District.findOne({dist: distName}, function(err,d){
+        if (err) {console.log('D find' + err);}
+
+        var a = new Activity({
+          name: actName,
+          loc: locName,
+          date: schedule,
+          dist: d._id,
+          organizer: o._id
+        });
+        a.save(function(err){
+          // if(err){console.log('A save ' + err);};
+          // Organizer.update({name: orgName}, {$set: {activities: o.push(a._id)}},function(err){ console.log ('O update ' + err)});
+          // Location.update({name: locName}, {$set: {activities: l.push(a._id)}},function(err){ console.log(' L update ' + err)});
+          // schedule.forEach(function(s){
+          //
+          //   var dateFrom = s.dateFrom;
+          //   Date.find({date:dateFrom}, function(err, d){
+          //     if(err){ console.log('d find ' + err);};
+          //     Date.update({date: dateFrom}, {$set: {activities: d.push(a._id)}},function(err){ console.log('Date Update ' + err);});
+        });
+      });
+    });
+  });
+}
+
+async.waterfall([preData, saveAct],function(err){
+        console.log(err);
+})
