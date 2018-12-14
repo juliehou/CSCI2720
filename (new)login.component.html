@@ -1,0 +1,28 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+
+
+
+<mat-card class="login-card">
+    <div class='container'>
+        <h1 class='my-5 text-center'><mat-card-title>User Login</mat-card-title></h1>
+        <div style='height: 500px; overflow-y: auto;'>
+            <mat-card-content class="login-content">
+                <form (submit)="onLogin(loginForm)" #loginForm="ngForm" class="login-form">
+                    <div class="form-group">
+                        <mat-form-field class="login-full-width">
+                            <label><mat-error *ngIf="usernameInput.invalid">Please enter your username</mat-error></label>
+                                <input class="form-control" matInput name="username" placeholder="Username" minlength="4" maxlength="20" ngModel #usernameInput="ngModel" required>
+                        </mat-form-field>
+                    </div>
+                    <div class="form-group">
+                        <mat-form-field class="login-full-width">
+                            <label><mat-error *ngIf="passwordInput.invalid">Please enter your password</mat-error></label>
+                                <input class="form-control" matInput name="password" placeholder="Password" minlength="4" maxlength="20" ngModel #passwordInput="ngModel" required>
+                        </mat-form-field>
+                    </div>
+                    <button mat-raised-button color="accent" type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </mat-card-content>
+        </div>
+    </div>
+</mat-card>
