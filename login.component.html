@@ -1,0 +1,26 @@
+<mat-card class="login-card">
+  <mat-card-title>Login Form</mat-card-title>
+  <mat-card-content class="login-content">
+    <form (submit)="onLogin(loginForm)" #loginForm="ngForm" class="login-form">
+    <table>
+      <tr>
+        <td>
+       <mat-form-field class="login-full-width">
+         <input matInput name="username" placeholder="Username" minlength="4" maxlength="20" ngModel #usernameInput="ngModel" required>
+         <mat-error *ngIf="usernameInput.invalid">Please enter a valid username.(4-20 Characters)</mat-error>
+       </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>
+       <mat-form-field class="login-full-width">
+          <input matInput name="password" placeholder="Password" minlength="4" maxlength="20" ngModel #passwordInput="ngModel" required>
+          <mat-error *ngIf="passwordInput.invalid">Please enter a valid password.(4-20 Characters)</mat-error>
+       </mat-form-field>
+     </td>
+     </tr>
+   </table>
+   <button mat-raised-button color="accent" type="submit">Login</button>
+   </form>
+  </mat-card-content>
+</mat-card>
