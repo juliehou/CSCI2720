@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+
+
 <div class='text-right'>
   <header style='height: 30%' class='px-3 pt-2'>
     <a routerLink='' >Log Out</a>
@@ -86,9 +89,9 @@
       <td class='align-middle text-center'>{{act.loc}}</td>
       <td class='align-middle text-center'>{{act.date}}</td>
       <td class='align-middle text-center'>
-      <button class = "btn btn-link"(click)="updateWindow($event,i)">Update</button></td>
+      <button class = "btn btn-primary"(click)="updateWindow($event,i)">Update</button></td>
       <td class='align-middle text-center'>
-      <button class = "btn btn-link"(click)="adminDelete(act.organizer, act.name, act.loc, act.date)">Delete</button></td>
+      <button class = "btn btn-primary"(click)="adminDelete(act.organizer, act.name, act.loc, act.date)">Delete</button></td>
       <div id="{{i}}" class="modal" (click)="closeWindow($event,i)">
 
         <div class="modal-content animate">
