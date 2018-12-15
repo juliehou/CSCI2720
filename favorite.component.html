@@ -1,0 +1,39 @@
+
+<div class='text-right'>
+  <header style='height: 30%' class='px-3 pt-2'>
+    <a routerLink='' >Home</a>
+    <!-- <a routerLink='/admin/activities' >admin </a>|
+    <a routerLink='/favorites'>favorite</a> -->
+  </header>
+</div>
+
+<h1 class='my-5 text-center'>My Favorites</h1>
+
+<div class='container' id='actTable' style='height: 500px; overflow-y: auto;'>
+<table class='table'>
+  <thead>
+    <tr>
+      <th style=' text-align: center;'>#</th>
+      <th style=' text-align: center;' (click)="sort('org')">Organizer</th>
+      <th style=' text-align: center;' (click)="sort('name')">Name</th>
+      <th style=' text-align: center;' (click)="sort('dist')">District</th>
+      <th style=' text-align: center;'>Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let fav of favorites;">
+      <td class='align-middle text-center'>{{fav.id}}</td>
+      <td class='align-middle text-left'>{{fav.dist}}</td>
+      <td class='align-middle text-left'>{{fav.org}}</td>
+      <td class='align-middle text-left'>{{fav.name}}</td>
+      <td class='align-middle text-center'>
+        <div class="dropdown">
+          <button class="btn btn-link" type="button" id="dropdownMenuButton" (click)="deleteFav(fav.id)">
+            Delete</button>
+        </div>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+</div>

@@ -1,0 +1,122 @@
+<div class='text-right'>
+  <header style='height: 30%' class='px-3 pt-2'>
+    <a routerLink='' >Log Out</a>
+    <!-- <a routerLink='/admin/activities' >admin </a>|
+    <a routerLink='/favorites'>favorite</a> -->
+  </header>
+</div>
+
+
+<h1 class='my-5 text-center'>Admin CRUD</h1>
+
+  <div class = 'row mb-5'>
+
+<div class='col-2 ml-4'>
+      <h5>Create Event</h5>
+<button type='button' class='btn btn-secondary' (click)="updateWindow($event,0)">Create</button>
+</div>
+
+<div class="create modal" id=0 (click)="closeWindow($event)">
+
+  <div class="modal-content animate container">
+    <div>
+        <div ><h2>Create Event</h2></div>
+        <div ></div>
+    </div>
+
+    <form  method='post' action='http://localhost:3000/admin/activities/create'>
+      <ul>
+          <li class='my-1'>Event Name: <input type='text' name = "name" ></li>
+          <li class='my-1' >Date: <input type='text' name = "date" placeholder="yyyy-mm-dd">
+            </li>
+          <li class='my-1'>Start Time: <input type='text' name = "sTime" placeholder="00:00">
+            </li>
+          <li class='my-1'>End Time: <input type='text' name = "eTime" placeholder="00:00">
+            </li>
+          <li class='my-1'>District: <input type='text' name = "dist"></li>
+          <li class='my-1'>Location: <input type='text' name = "loc"></li>
+          <li class='my-1'>Organizer: <input type='text' name = "org"></li>
+          <li class='my-1'>Contact: <input type='text' name = "contact"></li>
+      </ul>
+    <!-- (click)= "adminUpdate(act.organizer, act.name, act.loc, act.date, act.dist, act.contact) -->
+      <div>
+          <button type="submit" class="btn btn-secondary">Add New Event</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class='col-2 mx-auto'>
+
+  <h5> Reload Data</h5>
+    <form method='get' action='http://localhost:3000/refresh-data'>
+      <button type="submit" class="btn btn-secondary" >Reload Data</button>
+    </form>
+
+</div>
+
+
+<div class='col'>
+<div class='mx-auto'>
+    <h5>Upload CSV</h5>
+      <app-upload></app-upload>
+</div>
+</div>
+
+</div>
+
+<div class='mx-3' id='actTable' style='height: 500px; overflow-y: auto;'>
+<table class='table'>
+  <thead>
+    <tr>
+      <th style=' text-align: center;'>#</th>
+      <th style=' text-align: center;' (click)="sort('org')">Organizer</th>
+      <th style=' text-align: center;' (click)="sort('name')">Name</th>
+      <th style=' text-align: center;' (click)="sort('loc')">Location</th>
+      <th style=' text-align: center;' (click)="sort('date')">Date and Time</th>
+      <th style=' text-align: center;' >Update</th>
+      <th style=' text-align: center;' >Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let act of activities; let i = index">
+      <td class='align-middle text-center'>{{i + 1}}</td>
+      <td class='align-middle text-center'>{{act.organizer}}</td>
+      <td class='align-middle text-center'>{{act.name}}</td>
+      <td class='align-middle text-center'>{{act.loc}}</td>
+      <td class='align-middle text-center'>{{act.date}}</td>
+      <td class='align-middle text-center'>
+      <button class = "btn btn-link"(click)="updateWindow($event,i)">Update</button></td>
+      <td class='align-middle text-center'>
+      <button class = "btn btn-link"(click)="adminDelete(act.organizer, act.name, act.loc, act.date)">Delete</button></td>
+      <div id="{{i}}" class="modal" (click)="closeWindow($event,i)">
+
+        <div class="modal-content animate">
+          <div>
+              <div ><h2>Edit Event</h2></div>
+          </div>
+
+            <form  method='post' action='http://localhost:3000/admin/activities/update'>
+              <ul>
+                  <li >Event Name: <input type='text' name = "name" value = {{act.name}}></li>
+                  <li >Date: <input type='text' name = "date" value = {{act.date}}>
+                    </li>
+                  <li>District: <input type='text' name = "dist" value = {{act.dist}}></li>
+                  <li>Location: <input type='text' name = "loc" value= {{act.loc}}></li>
+                  <li>Organizer: <input type='text' name = "org" value={{act.organizer}}></li>
+                  <li>Contact: <input type='text' name = "contact" value = {{act.contact}}></li>
+                  <input type='hidden' name = "_id" value = {{act._id}}>
+              </ul>
+<!-- (click)= "adminUpdate(act.organizer, act.name, act.loc, act.date, act.dist, act.contact) -->
+              <div>
+                  <button type="submit" class="btn btn-secondary">Save changes</button>
+              </div>
+            </form>
+        </div>
+      </div>
+
+    </tr>
+
+  </tbody>
+</table>
+</div>

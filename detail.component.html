@@ -1,0 +1,71 @@
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4"><h2>Activity Details</h2></div>
+            <div class="col-sm-7"></div>
+            <div class="col-sm-1"><img src="calendar.png" class="img-thumbnail" alt="calendar"></div>
+        </div>
+
+        <ul class="list-group">
+            <li class="list-group-item"><b>Activity Name: </b> <span class="badge badge-secondary float-right">Fund raising project</span></li>
+            <li class="list-group-item">Date:<span class="float-right">
+                <select class="custom-select bg-light my-1 mr-sm-2 text-secondary" id="eventSelect">
+                <option selected>Activity Time</option>
+                <option value="1">12/1 1700-2100</option>
+                <option value="2">12/1 1700-2100</option>
+                <option value="3">12/1 1700-2100</option>
+                </select></span></li>
+            <li class="list-group-item">District: <span class="badge badge-secondary float-right">Shatin</span></li>
+            <li class="list-group-item">Location: <span class="badge badge-secondary float-right">lalala</span></li>
+            <li class="list-group-item">Organizer: <span class="badge badge-secondary float-right">Lawrence Tsai</span></li>
+        </ul>
+    </div>
+    <div class="container" id="main">
+        <br /><br />
+        <h2>Comments</h2>
+        <br />
+        <ul id="comments" class="list-unstyled">
+            <li class="media">
+                <svg height="100" width="100">
+                    <circle cx="50" cy="50" r="40" fill="green"></circle>
+                </svg>
+                <div class="media-body">
+                    <h5>Lawrence</h5>
+                    <p>Such a fun activity!</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <form id="commentform" action="writefile.php" method="post">
+            <div class="form-group">
+                <label for="usercomment">Your comment</label>
+                <textarea class="form-control" id="usercomment" rows="5"></textarea>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="inputcolor" value="red">Red
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="inputcolor" value="green">Green
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="inputcolor" value="yellow">Yellow
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="inputcolor" value="blue">Blue
+                </label>
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="processForm();writeFile()">Add comment</button>
+        </form>
+    </div>
+</body>
